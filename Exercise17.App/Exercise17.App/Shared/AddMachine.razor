@@ -1,0 +1,25 @@
+﻿<div class="col-6 offset-3">
+<h2 class="text-center">Add new Machine to the park</h2>
+
+<div class="mb-3">
+    <lable for="machineName" class="form-label fs-5">Machine name:</lable>
+    <input type="text" @bind="name" id="machineName" class="form-control"/>
+</div>
+<div class="text-end">
+<button @onclick="OnAdd" class="btn btn-secunadry border border-1 border-dark">Add</button>
+</div>
+</div>
+
+
+@code {
+    private string name = "";
+
+    [Parameter]
+    public EventCallback<string> Add { get; set; }
+
+    public async Task OnAdd()
+    {
+        await Add.InvokeAsync(name);
+        name = "";
+    }
+}

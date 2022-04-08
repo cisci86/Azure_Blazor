@@ -12,6 +12,7 @@ using Exercise17.FuncApi.Models;
 using Exercise17.FuncApi.Helpers;
 using System.Linq;
 using Exercise17.Shared;
+using Microsoft.Azure.Cosmos.Table.Queryable;
 
 namespace Exercise17.FuncApi
 {
@@ -20,7 +21,7 @@ namespace Exercise17.FuncApi
         [FunctionName("Get")]
         public static async Task<IActionResult> Get(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "machines")] HttpRequest req,
-            [Table("Machines", Connection = "AzureWebJobsStorage")] CloudTable table,
+            [Table("machines", Connection = "AzureWebJobsStorage")] CloudTable table,
             ILogger log)
         {
             log.LogInformation("Getting all items...");
@@ -34,7 +35,7 @@ namespace Exercise17.FuncApi
         [FunctionName("Create")]
         public static async Task<IActionResult> Create(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route ="machines")] HttpRequest req,
-            [Table("Machines", Connection = "AzureWebJobsStorage")] IAsyncCollector<MachineEntity> machines,
+            [Table("machines", Connection = "AzureWebJobsStorage")] IAsyncCollector<MachineEntity> machines,
             ILogger log)
         {
             log.LogInformation("Creating new machine");

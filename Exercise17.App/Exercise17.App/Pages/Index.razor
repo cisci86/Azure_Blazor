@@ -4,21 +4,21 @@
 
 <AddMachine Add="AddMachine"></AddMachine>
 
-@*<Machines MachinePark=@machines></Machines>*@
+<Machines MachinePark=@machines></Machines>
 
 @code {
     private List<Machine> machines = new List<Machine>();
 
-    //protected override async Task OnInitializedAsync()
-    //{
-    //    machines = await httpClient.GetFromJsonAsync<List<Machine>>("api/machines");
-    //}
+    protected override async Task OnInitializedAsync()
+    {
+        machines = await httpClient.GetFromJsonAsync<List<Machine>>("api/machines");
+    }
 
     public async Task AddMachine(string name)
     {
         if (string.IsNullOrEmpty(name)) return;
 
-        var response = await httpClient.PostAsJsonAsync<CreateMachineDto>("api/machines", new CreateMachineDto { Name = name });
+        var response = await httpClient.PostAsJsonAsync<CreateMachineDto>("/api/machines", new CreateMachineDto { Name = name });
 
         if (response.IsSuccessStatusCode)
         {

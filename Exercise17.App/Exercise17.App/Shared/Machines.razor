@@ -1,0 +1,26 @@
+﻿<div class="container"></div>
+@foreach (var machine in MachinePark)
+{
+    <fieldset>
+        <legend>@(machine.Online ? "Online" : "Offline")</legend>
+    <div class="card">
+        <div class="card-header">
+            @machine.Name
+        </div>
+        <div class="card-body">
+            <p>Machine Id: @machine.Id</p>
+            <p>Last Updated:</p>
+        </div>
+        <div class="card-footer">
+            <a><i class="fa-regular fa-arrows-rotate"></i></a>
+            <a><i class="fa-regular fa-trash"></i></a>
+            <a><i class="fa-regular fa-circle-info"></i></a>
+        </div>
+    </div>
+    </fieldset>
+}
+
+@code {
+    [Parameter]
+    public List<Machine> MachinePark { get; set; } = null!;
+}

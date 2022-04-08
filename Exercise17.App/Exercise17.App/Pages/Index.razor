@@ -2,8 +2,13 @@
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<Machines MachinePark=@machines></Machines>
 
-Welcome to your new app.
+@code {
+    private List<Machine> machines = new List<Machine>();
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    protected override async Task OnInitializedAsync()
+    {
+        machines = await httpClient.GetFromJsonAsync<List<Machine>>("api/machines");
+    }
+}

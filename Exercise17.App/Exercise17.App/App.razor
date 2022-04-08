@@ -11,13 +11,13 @@
     </NotFound>
 </Router>
 @code{
-[Inject]
-    IJSRuntime JSRuntime { get; set; }
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/bootstrap.min.js");
-        }
-    }
+//[Inject]
+//    IJSRuntime JSRuntime { get; set; }
+//    protected override async Task OnAfterRenderAsync(bool firstRender)
+//    {
+//        if (firstRender)
+//        {
+//            await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/bootstrap.min.js");
+//        }
+//    }
 }

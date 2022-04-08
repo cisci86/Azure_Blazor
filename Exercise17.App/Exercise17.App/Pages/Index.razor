@@ -2,13 +2,29 @@
 
 <PageTitle>Index</PageTitle>
 
-<Machines MachinePark=@machines></Machines>
+<AddMachine Add="AddMachine"></AddMachine>
+
+@*<Machines MachinePark=@machines></Machines>*@
 
 @code {
     private List<Machine> machines = new List<Machine>();
 
-    protected override async Task OnInitializedAsync()
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    machines = await httpClient.GetFromJsonAsync<List<Machine>>("api/machines");
+    //}
+
+    public async Task AddMachine(string name)
     {
-        machines = await httpClient.GetFromJsonAsync<List<Machine>>("api/machines");
+        if (string.IsNullOrEmpty(name)) return;
+
+        var response = await httpClient.PostAsJsonAsync<CreateMachineDto>("api/machines", new CreateMachineDto { Name = name });
+
+        if (response.IsSuccessStatusCode)
+        {
+            var machine = await response.Content.ReadFromJsonAsync<Machine>();
+            if (machine != null)
+                machines.Add(machine);
+        }
     }
 }

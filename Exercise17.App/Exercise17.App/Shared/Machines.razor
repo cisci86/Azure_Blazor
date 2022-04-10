@@ -1,24 +1,29 @@
 ﻿<div class="container"></div>
+<div class="row">
 @foreach (var machine in MachinePark)
 {
-    <fieldset>
-        <legend>@(machine.Online ? "Online" : "Offline")</legend>
-    <div class="card">
-        <div class="card-header">
-            @machine.Name
+        <div class="col-3">
+            <fieldset class="border border-4 @(machine.Online ? "border-success" : "border-danger")">
+                <legend class="@(machine.Online ? "text-success" : "text-danger")">@(machine.Online ? "Online" : "Offline")</legend>
+                <div class="card">
+                    <div class="card-header">
+                        @machine.Name
+                    </div>
+                    <div class="card-body">
+                        <p>Machine Id: <span class="machineId">@machine.Id</span></p>
+                        <p>Last Updated:</p>
+                    </div>
+                    <div class="card-footer">
+                        <a><i class="fa-solid fa-arrows-rotate"></i></a>
+                        <a><i class="fa-solid fa-trash"></i></a>
+                        <a><i class="fa-solid fa-circle-info"></i></a>
+                    </div>
+                </div>
+            </fieldset>
         </div>
-        <div class="card-body">
-            <p>Machine Id: @machine.Id</p>
-            <p>Last Updated:</p>
-        </div>
-        <div class="card-footer">
-            <a><i class="fa-regular fa-arrows-rotate"></i></a>
-            <a><i class="fa-regular fa-trash"></i></a>
-            <a><i class="fa-regular fa-circle-info"></i></a>
-        </div>
-    </div>
-    </fieldset>
+    
 }
+</div> 
 
 @code {
     [Parameter]

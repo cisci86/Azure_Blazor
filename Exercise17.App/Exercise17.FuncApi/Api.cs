@@ -21,7 +21,7 @@ namespace Exercise17.FuncApi
         [FunctionName("Get")]
         public static async Task<IActionResult> Get(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "machines")] HttpRequest req,
-            [Table("machines", Connection = "AzureWebJobsStorage")] CloudTable table,
+            [Table("machinepark", Connection = "AzureWebJobsStorage")] CloudTable table,
             ILogger log)
         {
             log.LogInformation("Getting all items...");
@@ -35,7 +35,7 @@ namespace Exercise17.FuncApi
         [FunctionName("Create")]
         public static async Task<IActionResult> Create(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route ="machines")] HttpRequest req,
-            [Table("machines", Connection = "AzureWebJobsStorage")] IAsyncCollector<MachineEntity> machines,
+            [Table("machinepark", Connection = "AzureWebJobsStorage")] IAsyncCollector<MachineEntity> machines,
             ILogger log)
         {
             log.LogInformation("Creating new machine");

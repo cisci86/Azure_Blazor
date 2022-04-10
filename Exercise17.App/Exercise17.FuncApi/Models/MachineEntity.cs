@@ -11,5 +11,6 @@ namespace Exercise17.FuncApi.Models
     {
         public string Name { get; set; }
         public bool Online { get; set; }
+        public int Data { get; set; }
     }
 }

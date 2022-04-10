@@ -11,10 +11,12 @@ namespace Exercise17.Shared
         public string Id { get; set; }
         public string Name { get; set; }
         public bool Online { get; set; }
+        public int Data { get; set; }
 
         public Machine()
         {
             Id = Guid.NewGuid().ToString();
+            Data = 0;
         }
         
     }

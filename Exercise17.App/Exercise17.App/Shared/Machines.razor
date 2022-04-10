@@ -1,31 +1,59 @@
-﻿<div class="container"></div>
+﻿@using Bogus
+<div class="container"></div>
 <div class="row">
-@foreach (var machine in MachinePark)
-{
+    @foreach (var machine in MachinePark)
+    {
         <div class="col-3">
-            <fieldset class="border border-4 @(machine.Online ? "border-success" : "border-danger")">
-                <legend class="@(machine.Online ? "text-success" : "text-danger")">@(machine.Online ? "Online" : "Offline")</legend>
+            <fieldset class="@(machine.Online ? "success" : "danger")">
+                <legend class="@(machine.Online ? "tsuccess" : "tdanger")">@(machine.Online ? "Online" : "Offline")</legend>
                 <div class="card">
-                    <div class="card-header">
+                    <div class="card-header text-center">
                         @machine.Name
                     </div>
                     <div class="card-body">
                         <p>Machine Id: <span class="machineId">@machine.Id</span></p>
-                        <p>Last Updated:</p>
+                        <div class="row">
+                            <div class="col-10">
+                                <p>Last measured temperature: @(machine.Data)&#176;C</p>
+                            </div>
+                            <div class="col text-end">
+                                <button @onclick="() => FetchTemperature(machine)"><i class="fa-solid fa-arrows-rotate fa-xl"></i></button>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-footer">
-                        <a><i class="fa-solid fa-arrows-rotate"></i></a>
-                        <a><i class="fa-solid fa-trash"></i></a>
-                        <a><i class="fa-solid fa-circle-info"></i></a>
+                        <div class="row">
+                            <div class="col">
+
+                                <a class="me-1 text-danger"><i class="fa-solid fa-trash fa-xl"></i></a>
+                                <button class="me-1"><i class="fa-solid fa-circle-info fa-xl"></i></button>
+                            </div>
+                            <div class="col text-end align-self-center">
+                                <a><i class="fa-solid fa-power-off fa-xl"></i></a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </fieldset>
         </div>
-    
-}
-</div> 
+
+    }
+</div>
 
 @code {
+
     [Parameter]
     public List<Machine> MachinePark { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback<Machine> UpdateTemperture { get; set; }
+
+    Faker faker = new Faker();
+
+    public async Task FetchTemperature(Machine machine)
+    {
+        var newTemp = faker.Random.Number(0, 35);
+        machine.Data = newTemp;
+        UpdateTemperture.InvokeAsync(machine);
+    }
 }

@@ -32,6 +32,15 @@ namespace Exercise17.FuncApi
 
             return new OkObjectResult(result);
         }
+        [FunctionName("Get/{id}")]
+        public static async Task<IActionResult> GetOne(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "machines/{id}")] HttpRequest req,
+            [Table("machinepark", Connection = "AzureWebJobsStorage")] CloudTable table,
+            ILogger log)
+        {
+
+        }
+
         [FunctionName("Create")]
         public static async Task<IActionResult> Create(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route ="machines")] HttpRequest req,
@@ -55,6 +64,31 @@ namespace Exercise17.FuncApi
             await machines.AddAsync(machine.ToMachineEntity());
 
             return new OkObjectResult(machine);
+        }
+
+        [FunctionName("Update")]
+        public static async Task<IActionResult> UpdateData(
+             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "machines/{id}")] HttpRequest req,
+             [Table("IndividualMachines", Connection = "AzureWebJobsStorage")] CloudTable table,
+             string id,
+             ILogger log)
+        {
+            log.LogInformation("Updating machine");
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var machineToUpdate = JsonConvert.DeserializeObject<Machine>(requestBody);
+
+            if (machineToUpdate is null || machineToUpdate.Id != id) return new BadRequestResult();
+
+            var machineEntity = new MachineEntity
+            {
+                Name = machineToUpdate.Name,
+                Online = machineToUpdate.Online,
+                Data = machineToUpdate.Data,
+                RowKey = DateTime.Now.ToString("g"),
+                PartitionKey = id
+            };
+
+            return new NoContentResult();
         }
     }
 }

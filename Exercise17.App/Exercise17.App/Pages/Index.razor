@@ -4,7 +4,7 @@
 
 <AddMachine Add="AddMachine"></AddMachine>
 
-<Machines MachinePark=@machines></Machines>
+<Machines MachinePark=@machines UpdateTemperture="UpdateTemp"></Machines>
 
 @code {
     private List<Machine> machines = new List<Machine>();
@@ -26,5 +26,11 @@
             if (machine != null)
                 machines.Add(machine);
         }
+    }
+
+    public async Task UpdateTemp(Machine machine)
+    {
+       
+        var response = await httpClient.PutAsJsonAsync<Machine>($"api/machines/{machine.Id}", machine);
     }
 }

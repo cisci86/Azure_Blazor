@@ -13,6 +13,7 @@ using Exercise17.FuncApi.Helpers;
 using System.Linq;
 using Exercise17.Shared;
 using Microsoft.Azure.Cosmos.Table.Queryable;
+using Microsoft.Azure.Storage.Blob;
 
 namespace Exercise17.FuncApi
 {
@@ -32,18 +33,10 @@ namespace Exercise17.FuncApi
 
             return new OkObjectResult(result);
         }
-        [FunctionName("Get/{id}")]
-        public static async Task<IActionResult> GetOne(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "machines/{id}")] HttpRequest req,
-            [Table("machinepark", Connection = "AzureWebJobsStorage")] CloudTable table,
-            ILogger log)
-        {
-
-        }
 
         [FunctionName("Create")]
         public static async Task<IActionResult> Create(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route ="machines")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "machines")] HttpRequest req,
             [Table("machinepark", Connection = "AzureWebJobsStorage")] IAsyncCollector<MachineEntity> machines,
             ILogger log)
         {
@@ -66,10 +59,11 @@ namespace Exercise17.FuncApi
             return new OkObjectResult(machine);
         }
 
-        [FunctionName("Update")]
+        [FunctionName("UpdateData")]
         public static async Task<IActionResult> UpdateData(
-             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "machines/{id}")] HttpRequest req,
-             [Table("IndividualMachines", Connection = "AzureWebJobsStorage")] CloudTable table,
+             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "machines/data/{id}")] HttpRequest req,
+             [Table("machinepark", Connection = "AzureWebJobsStorage")] CloudTable machinePark,
+             [Table("individualmachines", Connection = "AzureWebJobsStorage")] CloudTable individual,
              string id,
              ILogger log)
         {
@@ -84,11 +78,75 @@ namespace Exercise17.FuncApi
                 Name = machineToUpdate.Name,
                 Online = machineToUpdate.Online,
                 Data = machineToUpdate.Data,
-                RowKey = DateTime.Now.ToString("g"),
-                PartitionKey = id
+                RowKey = DateTime.Now.ToString("G"),
+                PartitionKey = machineToUpdate.Id
             };
+
+            var machineUpdate = machineToUpdate.ToMachineEntity();
+            machineUpdate.ETag = "*";
+
+            var operation = TableOperation.Replace(machineUpdate);
+            await machinePark.ExecuteAsync(operation);
+
+            await individual.ExecuteAsync(TableOperation.Insert(machineEntity));
+
+            return new OkObjectResult(machineEntity);
+        }
+
+        [FunctionName("UpdateStatus")]
+        public static async Task<IActionResult> UpdateStatus(
+             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "machines/status/{id}")] HttpRequest req,
+             [Table("machinepark", Connection = "AzureWebJobsStorage")] CloudTable machinePark,
+             string id,
+             ILogger log)
+        {
+            log.LogInformation("Updating machine status");
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var machineToUpdate = JsonConvert.DeserializeObject<Machine>(requestBody);
+
+            if (machineToUpdate is null || machineToUpdate.Id != id) return new BadRequestResult();
+
+            var machineUpdate = machineToUpdate.ToMachineEntity();
+            machineUpdate.ETag = "*";
+
+            var operation = TableOperation.Replace(machineUpdate);
+            await machinePark.ExecuteAsync(operation);
 
             return new NoContentResult();
         }
+
+        [FunctionName("Delete")]
+        public static async Task<IActionResult> Delete(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "machines/{id}")] HttpRequest req,
+            [Table("machinepark", "Machines", "{id}", Connection = "AzureWebJobsStorage")] MachineEntity machineTableToRemove,
+            [Table("machinepark", Connection = "AzureWebJobsStorage")] CloudTable machineTable,
+            [Queue("machinequeue", Connection = "AzureWebJobsStorage")] IAsyncCollector<MachineEntity> queueMachine,
+            string id,
+            ILogger log)
+        {
+            log.LogInformation("Deleting a machine");
+
+            if (machineTableToRemove == null) return new BadRequestResult();
+
+            await queueMachine.AddAsync(machineTableToRemove);
+
+            var operation = TableOperation.Delete(machineTableToRemove);
+            var res = await machineTable.ExecuteAsync(operation);
+
+            return new NoContentResult();
+        }
+
+        [FunctionName("GetRemovedFromQueue")]
+        public static async Task RemoveFromQueue(
+            [QueueTrigger("machinequeue", Connection = "AzureWebJobsStorage")] MachineEntity machine,
+            [Blob("removed", Connection = "AzureWebJobsStorage")] CloudBlobContainer blobContainer,
+            ILogger log)
+        {
+            log.LogInformation("Archiving has started");
+            await blobContainer.CreateIfNotExistsAsync();
+            var blob = blobContainer.GetBlockBlobReference($"{machine.Id}.txt");
+            await blob.UploadTextAsync($"Machine name: {machine.Name}\nMachine id: {machine.Id} \nDeleted time: {machine.Timestamp:g} \nLast mesured temperature: {machine.Data}");
+        }
     }
 }
+

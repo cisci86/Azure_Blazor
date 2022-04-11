@@ -17,6 +17,7 @@ namespace Exercise17.FuncApi.Helpers
                 Id = machineEntity.RowKey,
                 Name = machineEntity.Name,
                 Online = machineEntity.Online,
+                Data = machineEntity.Data
             };
         }
 
@@ -24,11 +25,12 @@ namespace Exercise17.FuncApi.Helpers
         {
             return new MachineEntity
             {
+                Id = machine.Id,
                 RowKey = machine.Id,
                 Name = machine.Name,
                 Online = machine.Online,
-                PartitionKey = "Machines"
-
+                PartitionKey = "Machines",
+                Data = machine.Data,
             };
         }
         

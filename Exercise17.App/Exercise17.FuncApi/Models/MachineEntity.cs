@@ -9,6 +9,7 @@ namespace Exercise17.FuncApi.Models
 {
     public class MachineEntity : TableEntity
     {
+        public string  Id { get; set; }
         public string Name { get; set; }
         public bool Online { get; set; }
         public int Data { get; set; }

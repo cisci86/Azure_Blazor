@@ -31,6 +31,11 @@ button{
     border-color: greenyellow;
     box-shadow: none
 }
+#update{
+    width: 30px;
+    height: 30px;
+    background-color: lightgreen;
+}
 i{
     margin: auto;
 }

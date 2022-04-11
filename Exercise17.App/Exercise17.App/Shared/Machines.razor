@@ -1,4 +1,5 @@
 ﻿@using Bogus
+@inject IJSRuntime JS
 <div class="container"></div>
 <div class="row">
     @foreach (var machine in MachinePark)
@@ -16,8 +17,8 @@
                             <div class="col-10">
                                 <p>Last measured temperature: @(machine.Data)&#176;C</p>
                             </div>
-                            <div class="col text-end">
-                                <button @onclick="() => FetchTemperature(machine)"><i class="fa-solid fa-arrows-rotate fa-xl"></i></button>
+                            <div class="col text-end align-self-start">
+                                <button id="update" @onclick="() => FetchTemperature(machine)" data-bs-toggle="tooltip" data-bs-placement="top" title="Update"><i class="fa-solid fa-arrows-rotate"></i></button>
                             </div>
                         </div>
                     </div>
@@ -25,11 +26,11 @@
                         <div class="row">
                             <div class="col">
 
-                                <a class="me-1 text-danger"><i class="fa-solid fa-trash fa-xl"></i></a>
+                                <button @onclick="() => Delete(machine)" class="me-1 text-danger"><i class="fa-solid fa-trash fa-xl"></i></button>
                                 <button class="me-1"><i class="fa-solid fa-circle-info fa-xl"></i></button>
                             </div>
                             <div class="col text-end align-self-center">
-                                <a><i class="fa-solid fa-power-off fa-xl"></i></a>
+                                <button @onclick="() => OnlineOnOff(machine)"><i class="fa-solid fa-power-off fa-xl"></i></button>
                             </div>
                         </div>
                     </div>
@@ -45,15 +46,35 @@
     [Parameter]
     public List<Machine> MachinePark { get; set; } = null!;
 
-    [Parameter]
-    public EventCallback<Machine> UpdateTemperture { get; set; }
-
     Faker faker = new Faker();
 
     public async Task FetchTemperature(Machine machine)
     {
         var newTemp = faker.Random.Number(0, 35);
         machine.Data = newTemp;
-        UpdateTemperture.InvokeAsync(machine);
+        var response = await httpClient.PutAsJsonAsync<Machine>($"api/machines/data/{machine.Id}", machine);
     }
-}
+
+
+    public async Task OnlineOnOff(Machine machine)
+    {
+        machine.Online = machine.Online ? false : true;
+        var response = await httpClient.PutAsJsonAsync<Machine>($"api/machines/status/{machine.Id}", machine);
+    }
+    private async Task Tooltip()
+    {
+        await JS.InvokeVoidAsync("test");
+    }
+
+    public async Task Delete(Machine machine)
+    {
+        var response = await httpClient.DeleteAsync($"api/machines/{machine.Id}");
+
+        if(response.IsSuccessStatusCode)
+        {
+            MachinePark.Remove(machine);
+        }
+    }
+
+    }
+

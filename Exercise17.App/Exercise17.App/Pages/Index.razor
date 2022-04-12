@@ -4,15 +4,17 @@
 
 <AddMachine Add="AddMachine"></AddMachine>
 
-<Machines MachinePark=@machines></Machines>
+<Machines MachinePark=@Data.machinePark></Machines>
 
 @code {
-    private List<Machine> machines = new List<Machine>();
+    // private List<Machine> machines = new List<Machine>();
 
-    protected override async Task OnInitializedAsync()
-    {
-        machines = await httpClient.GetFromJsonAsync<List<Machine>>("api/machines");
-    }
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    machines = await httpClient.GetFromJsonAsync<List<Machine>>("api/machines");
+    //}
+    [CascadingParameter]
+    public Exercise17.App.Shared.MainLayout Data{ get; set; }
 
     public async Task AddMachine(string name)
     {
@@ -24,7 +26,10 @@
         {
             var machine = await response.Content.ReadFromJsonAsync<Machine>();
             if (machine != null)
-                machines.Add(machine);
+            {
+                Data.machinePark.Add(machine);
+                Data.NotifyStateChange();
+            }
         }
     }
 }

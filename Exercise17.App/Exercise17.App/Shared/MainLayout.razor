@@ -3,11 +3,43 @@
         <NavMenu />
 <div class="page">
     <div class="sidebar">
+        <Statistics MachineCount="@MachineCount" Online="@Online"></Statistics>
     </div>
 
     <main>
         <article class="content px-4">
+            <CascadingValue Value="this">
             @Body
+            </CascadingValue>
         </article>
     </main>
 </div>
+
+@code{
+
+
+    public List<Machine> machinePark { get; set; } = new List<Machine>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        machinePark = await httpClient.GetFromJsonAsync<List<Machine>>("api/machines");
+    }
+
+    public void NotifyStateChange()
+    {
+        StateHasChanged();
+    }
+
+    private int machineCount;
+    public int MachineCount {
+        get { return machinePark.Count(); }
+        set { machineCount = value; }
+    }
+
+    private int online;
+    public int Online { 
+        get{ return machinePark.Where(m => m.Online == true).Count(); }
+        set{ online = value; } 
+    }
+}
+

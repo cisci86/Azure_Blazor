@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exercise17.App", "Exercise1
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exercise17.Shared", "Exercise17.Shared\Exercise17.Shared.csproj", "{CE88449C-2C87-4ED0-98B4-D4B3D391228B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exercise17.FuncApi", "Exercise17.FuncApi\Exercise17.FuncApi.csproj", "{47F486E4-9C4B-49E5-AC70-8A151FB6B47D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exercise17.FuncApi", "Exercise17.FuncApi\Exercise17.FuncApi.csproj", "{47F486E4-9C4B-49E5-AC70-8A151FB6B47D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

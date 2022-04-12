@@ -34,6 +34,10 @@ namespace Exercise17.FuncApi
             return new OkObjectResult(result);
         }
 
+        //[FunctionName("GetDetails")]
+        //public static async Task<IActionResult> Details(
+        //    [HttpTrigger(AuthorizationLevel.Anonymous)]
+
         [FunctionName("Create")]
         public static async Task<IActionResult> Create(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "machines")] HttpRequest req,

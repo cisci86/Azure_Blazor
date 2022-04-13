@@ -21,8 +21,4 @@
     <ProjectReference Include="..\Exercise17.Shared\Exercise17.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\js\" />
-  </ItemGroup>
-
 </Project>

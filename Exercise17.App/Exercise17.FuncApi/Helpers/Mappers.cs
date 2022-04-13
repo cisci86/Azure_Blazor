@@ -17,7 +17,8 @@ namespace Exercise17.FuncApi.Helpers
                 Id = machineEntity.RowKey,
                 Name = machineEntity.Name,
                 Online = machineEntity.Online,
-                Data = machineEntity.Data
+                Data = machineEntity.Data,
+                UpdatingTime = machineEntity.UpdatingTime
             };
         }
 
@@ -31,7 +32,21 @@ namespace Exercise17.FuncApi.Helpers
                 Online = machine.Online,
                 PartitionKey = "Machines",
                 Data = machine.Data,
+                UpdatingTime = machine.UpdatingTime
             };
+        }
+
+        public static MachineDetails ToMachineDetails(this MachineEntity machineEntity)
+        {
+            return new MachineDetails
+            {
+                Id = machineEntity.Id,
+                Name = machineEntity.Name,
+                Online = machineEntity.Online,
+                Data = machineEntity.Data,
+                TimeAdded = machineEntity.Timestamp
+            };
+           
         }
         
     }

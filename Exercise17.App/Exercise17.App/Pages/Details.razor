@@ -1,0 +1,69 @@
+﻿@page "/details"
+@inject AppState state
+@inject IJSRuntime Js
+<h3>Details about @MachineIn.Name</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Measure time</th>
+            <th>Temperature</th>
+        </tr>
+    </thead>
+@foreach (var measurement in Data)
+{
+    <tr>
+        <td>
+            @measurement.TimeAdded.ToString("g")
+        </td>
+        <td>
+            @(measurement.Data)&#176;C
+        </td>
+    </tr>
+}
+</table>
+
+<canvas id="tempValues" style="width:100%;max-width:600px; background-color:#d1e9f3;"></canvas>
+
+@code {
+
+    public Machine MachineIn { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        MachineIn = state.Machine; 
+        await GetData();
+        SetData();
+    }
+
+    public List<MachineDetails> Data { get; set; } = new List<MachineDetails>();
+    public static int dataCount;
+    private async Task GetData()
+    {
+        Data = await httpClient.GetFromJsonAsync<List<MachineDetails>>($"api/machines/{MachineIn.Id}");
+        dataCount = Data.Count();
+        temps = new int[dataCount];
+        dates = new string[dataCount];
+    }
+
+    public int[] temps;
+    public string[] dates;
+
+    private void SetData()
+    {
+        int i = 0;
+        foreach (var item in Data)
+        {
+            temps[i] = item.Data;
+            dates[i] = item.TimeAdded.ToString("g");
+            i++;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {        
+            await Js.InvokeVoidAsync("graph", dates, temps);
+            await base.OnAfterRenderAsync(firstRender);
+     
+    }
+
+}

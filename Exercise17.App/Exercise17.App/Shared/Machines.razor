@@ -1,24 +1,29 @@
 ﻿@using Bogus
-@inject IJSRuntime JS
+@inject AppState state
+@inject NavigationManager nav
 <div class="container"></div>
 <div class="row">
     @foreach (var machine in MachinePark)
     {
-        <div class="col-lg-3">
+        <div class="col-lg-3 mb-2">
             <fieldset class="@(machine.Online ? "success" : "danger")">
                 <legend class="@(machine.Online ? "tsuccess" : "tdanger")">@(machine.Online ? "Online" : "Offline")</legend>
                 <div class="card">
                     <div class="card-header text-center">
                         @machine.Name
                     </div>
-                    <div class="card-body">
-                        <p>Machine Id: <span class="machineId">@machine.Id</span></p>
-                        <div class="row">
-                            <div class="col-10">
-                                <p>Last measured temperature: @(machine.Data)&#176;C</p>
-                            </div>
-                            <div class="col text-end align-self-start">
-                                <button id="update" @onclick="() => FetchTemperature(machine)" data-bs-toggle="tooltip" data-bs-placement="top" title="Update"><i class="fa-solid fa-arrows-rotate"></i></button>
+                    <div class="card-body px-0">
+                        <p class="px-2">Machine Id: <span class="machineId">@machine.Id</span></p>
+                        <div class="bg-light px-2">
+                            <h4 class="text-center">Temperature data</h4>
+                            <div class="row">
+                                <div class="col-10">
+                                    <p class="col mb-1">Temperature: @(machine.Data)&#176;C</p>
+                                    <p class="col mb-1">Last updated: @(machine.UpdatingTime.ToString("g"))</p>
+                                </div>
+                                <div class="col text-end align-self-center">
+                                    <button id="update" @onclick="() => FetchTemperature(machine)" data-bs-toggle="tooltip" data-bs-placement="top" title="Update"><i class="fa-solid fa-arrows-rotate"></i></button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -26,11 +31,11 @@
                         <div class="row">
                             <div class="col">
 
-                                <button @onclick="() => Delete(machine)" class="me-1 text-danger"><i class="fa-solid fa-trash fa-xl"></i></button>
-                                <button class="me-1"><i class="fa-solid fa-circle-info fa-xl"></i></button>
+                                <button id="trash" @onclick="() => Delete(machine)" class="me-1 text-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"><i class="fa-solid fa-trash fa-xl"></i></button>
+                                <button id="info" @onclick="() => Details(machine)" class="me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="View details"><i class="fa-solid fa-circle-info fa-xl"></i></button>
                             </div>
                             <div class="col text-end align-self-center">
-                                <button @onclick="() => OnlineOnOff(machine)"><i class="fa-solid fa-power-off fa-xl"></i></button>
+                                <button id="power" @onclick="() => OnlineOnOff(machine)" class="@(machine.Online ? "text-danger" : "text-success")" data-bs-toggle="tooltip" data-bs-placement="top" title="@(machine.Online ? "Take Offline" : "Take Online")"><i class="fa-solid fa-power-off fa-xl"></i></button>
                             </div>
                         </div>
                     </div>
@@ -47,7 +52,7 @@
     public List<Machine> MachinePark { get; set; } = null!;
 
     [CascadingParameter]
-    public Exercise17.App.Shared.MainLayout Data{ get; set; }
+    public Exercise17.App.Shared.MainLayout Data { get; set; }
 
     Faker faker = new Faker();
 
@@ -55,6 +60,7 @@
     {
         var newTemp = faker.Random.Number(0, 35);
         machine.Data = newTemp;
+        machine.UpdatingTime = DateTime.Now;
         var response = await httpClient.PutAsJsonAsync<Machine>($"api/machines/data/{machine.Id}", machine);
 
     }
@@ -66,19 +72,21 @@
         var response = await httpClient.PutAsJsonAsync<Machine>($"api/machines/status/{machine.Id}", machine);
         Data.NotifyStateChange();
     }
-    private async Task Tooltip()
-    {
-        await JS.InvokeVoidAsync("test");
-    }
 
     public async Task Delete(Machine machine)
     {
         var response = await httpClient.DeleteAsync($"api/machines/{machine.Id}");
 
-        if(response.IsSuccessStatusCode)
+        if (response.IsSuccessStatusCode)
         {
             MachinePark.Remove(machine);
         }
+    }
+
+    public async void Details(Machine machine)
+    {
+        state.SetMachine(machine);
+        nav.NavigateTo("details");
     }
 
     }

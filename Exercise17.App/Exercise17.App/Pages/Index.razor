@@ -1,5 +1,5 @@
 ﻿@page "/"
-
+@inject IJSRuntime Js
 <PageTitle>Index</PageTitle>
 
 <AddMachine Add="AddMachine"></AddMachine>
@@ -31,5 +31,11 @@
                 Data.NotifyStateChange();
             }
         }
+    }
+     protected override async Task OnAfterRenderAsync(bool firstRender)
+    {        
+            await Js.InvokeVoidAsync("test");
+            await base.OnAfterRenderAsync(firstRender);
+     
     }
 }

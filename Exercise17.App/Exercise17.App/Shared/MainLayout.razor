@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@inject AppState state
 
         <NavMenu />
 <div class="page">
@@ -23,6 +24,7 @@
     protected override async Task OnInitializedAsync()
     {
         machinePark = await httpClient.GetFromJsonAsync<List<Machine>>("api/machines");
+        state.OnChange += StateHasChanged;
     }
 
     public void NotifyStateChange()

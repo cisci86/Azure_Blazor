@@ -34,9 +34,22 @@ namespace Exercise17.FuncApi
             return new OkObjectResult(result);
         }
 
-        //[FunctionName("GetDetails")]
-        //public static async Task<IActionResult> Details(
-        //    [HttpTrigger(AuthorizationLevel.Anonymous)]
+        [FunctionName("GetDetails")]
+        public static async Task<IActionResult> Details(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route ="machines/{id}")] HttpRequest req,
+            [Table("individualmachines", Connection = "AzureWebJobsStorage")] CloudTable machine,
+            string id,
+            ILogger log)
+        {
+            
+            log.LogInformation("Details about machine is collected...");
+            var query = new TableQuery<MachineEntity>();
+            var res = await machine.ExecuteQuerySegmentedAsync(query, null);
+ 
+            var result = res.Select(Mappers.ToMachineDetails).ToList();
+            var selected = result.Where(m => m.Id == id).ToList();
+            return new OkObjectResult(selected);
+        }
 
         [FunctionName("Create")]
         public static async Task<IActionResult> Create(
@@ -79,6 +92,7 @@ namespace Exercise17.FuncApi
 
             var machineEntity = new MachineEntity
             {
+                Id = machineToUpdate.Id,
                 Name = machineToUpdate.Name,
                 Online = machineToUpdate.Online,
                 Data = machineToUpdate.Data,

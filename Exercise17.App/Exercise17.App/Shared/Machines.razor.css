@@ -1,11 +1,15 @@
-﻿.machineId{
+﻿
+.machineId{
     font-size: 15px;
 }
-fieldset{
+fieldset {
     all: revert;
+    background-color: #d1e9f3;
 }
-legend{
+legend {
     all: revert;
+    background-color: #d1e9f3;
+    border-radius: 5px;
 }
 .success {
     border: 5px solid green;
@@ -23,20 +27,21 @@ legend{
     color: red;
     font-weight: bold;
 }
-button{
-    width:40px;
-    height:40px;
+button {
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background-color: aqua;
-    border-color: greenyellow;
-    box-shadow: none
+    border-color: black;
+    background-color: #d1e9f3;
 }
 #update{
     width: 30px;
     height: 30px;
-    background-color: lightgreen;
 }
 i{
     margin: auto;
+}
+#bg {
+    
 }
 

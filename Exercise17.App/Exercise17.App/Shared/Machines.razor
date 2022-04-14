@@ -62,7 +62,7 @@
         machine.Data = newTemp;
         machine.UpdatingTime = DateTime.Now;
         var response = await httpClient.PutAsJsonAsync<Machine>($"api/machines/data/{machine.Id}", machine);
-
+        Data.NotifyStateChange();
     }
 
 
@@ -80,7 +80,9 @@
         if (response.IsSuccessStatusCode)
         {
             MachinePark.Remove(machine);
+            
         }
+        Data.NotifyStateChange();
     }
 
     public async void Details(Machine machine)

@@ -4,7 +4,7 @@
         <NavMenu />
 <div class="page">
     <div class="sidebar">
-        <Statistics MachineCount="@MachineCount" Online="@Online"></Statistics>
+        <Statistics MachineCount="@MachineCount" Online="@Online" LastUpdated="@LastUpdated"></Statistics>
     </div>
 
     <main>
@@ -42,6 +42,12 @@
     public int Online { 
         get{ return machinePark.Where(m => m.Online == true).Count(); }
         set{ online = value; } 
+    }
+
+     private Machine lastUpdated;
+    public Machine LastUpdated { 
+        get{ return machinePark.OrderByDescending(m => m.UpdatingTime).FirstOrDefault(); }
+        set{ lastUpdated = value; } 
     }
 }
 

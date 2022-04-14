@@ -24,8 +24,8 @@
                                         <p class="col mb-1">Temperature: @(machine.Data)&#176;C</p>
                                         <p class="col mb-1">Last updated: @(machine.UpdatingTime.ToString("g"))</p>
                                     </div>
-                                    <div class="col text-end align-self-center">
-                                        <button @(machine.Online ? "" : "Disabled") id="update" @onclick="() => FetchTemperature(machine)" data-bs-toggle="tooltip" data-bs-placement="top" title="Update"><i class="fa-solid fa-arrows-rotate"></i></button>
+                                    <div class="col text-end align-self-center" data-bs-toggle="tooltip" data-bs-placement="top" title=@(machine.Online ? "Update" : "The machine needs to be online to update")>
+                                        <button disabled ="@(machine.Online ? false : true)" id="update" @onclick="() => FetchTemperature(machine)"><i class="fa-solid fa-arrows-rotate"></i></button>
                                     </div>
                                 </div>
                             </div>

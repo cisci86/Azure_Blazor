@@ -1,50 +1,52 @@
 ﻿@using Bogus
 @inject AppState state
 @inject NavigationManager nav
-<div class="container"></div>
-<div class="row">
-    @foreach (var machine in MachinePark)
-    {
-        <div class="col-lg-3 mb-2">
-            <fieldset class="@(machine.Online ? "success" : "danger")">
-                <legend class="@(machine.Online ? "tsuccess" : "tdanger")">@(machine.Online ? "Online" : "Offline")</legend>
-                <div class="card">
-                    <div class="card-header text-center">
-                        @machine.Name
-                    </div>
-                    <div class="card-body px-0">
-                        <p class="px-2">Machine Id: <span class="machineId">@machine.Id</span></p>
-                        <div class="bg-light px-2">
-                            <h4 class="text-center">Temperature data</h4>
+
+    <div class="text-center">
+    <h2 class="d-md-inline-block rounded px-2">Machine park</h2>
+    </div>
+    <div class="row">
+        @foreach (var machine in MachinePark.OrderBy(m => m.Online ? 0 : 1).ToList())
+        {
+            <div class="col-lg-3 mb-2">
+                <fieldset class="@(machine.Online ? "success" : "danger")">
+                    <legend class="@(machine.Online ? "tsuccess" : "tdanger")">@(machine.Online ? "Online" : "Offline")</legend>
+                    <div class="card">
+                        <div class="card-header text-center">
+                            @machine.Name
+                        </div>
+                        <div class="card-body px-0">
+                            <p class="px-2">Machine Id: <span class="machineId">@machine.Id</span></p>
+                            <div class="bg-light px-2">
+                                <h4 class="text-center">Temperature data</h4>
+                                <div class="row">
+                                    <div class="col-10">
+                                        <p class="col mb-1">Temperature: @(machine.Data)&#176;C</p>
+                                        <p class="col mb-1">Last updated: @(machine.UpdatingTime.ToString("g"))</p>
+                                    </div>
+                                    <div class="col text-end align-self-center">
+                                        <button @(machine.Online ? "" : "Disabled") id="update" @onclick="() => FetchTemperature(machine)" data-bs-toggle="tooltip" data-bs-placement="top" title="Update"><i class="fa-solid fa-arrows-rotate"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
                             <div class="row">
-                                <div class="col-10">
-                                    <p class="col mb-1">Temperature: @(machine.Data)&#176;C</p>
-                                    <p class="col mb-1">Last updated: @(machine.UpdatingTime.ToString("g"))</p>
+                                <div class="col">
+
+                                    <button id="trash" @onclick="() => Delete(machine)" class="me-1 text-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"><i class="fa-solid fa-trash fa-xl"></i></button>
+                                    <button id="info" @onclick="() => Details(machine)" class="me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="View details"><i class="fa-solid fa-circle-info fa-xl"></i></button>
                                 </div>
                                 <div class="col text-end align-self-center">
-                                    <button id="update" @onclick="() => FetchTemperature(machine)" data-bs-toggle="tooltip" data-bs-placement="top" title="Update"><i class="fa-solid fa-arrows-rotate"></i></button>
+                                    <button id="power" @onclick="() => OnlineOnOff(machine)" class="@(machine.Online ? "text-danger" : "text-success")" data-bs-toggle="tooltip" data-bs-placement="top" title="@(machine.Online ? "Take Offline" : "Take Online")"><i class="fa-solid fa-power-off fa-xl"></i></button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer">
-                        <div class="row">
-                            <div class="col">
-
-                                <button id="trash" @onclick="() => Delete(machine)" class="me-1 text-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"><i class="fa-solid fa-trash fa-xl"></i></button>
-                                <button id="info" @onclick="() => Details(machine)" class="me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="View details"><i class="fa-solid fa-circle-info fa-xl"></i></button>
-                            </div>
-                            <div class="col text-end align-self-center">
-                                <button id="power" @onclick="() => OnlineOnOff(machine)" class="@(machine.Online ? "text-danger" : "text-success")" data-bs-toggle="tooltip" data-bs-placement="top" title="@(machine.Online ? "Take Offline" : "Take Online")"><i class="fa-solid fa-power-off fa-xl"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </fieldset>
-        </div>
-
-    }
-</div>
+                </fieldset>
+            </div>
+        }
+    </div>
 
 @code {
 
@@ -80,7 +82,7 @@
         if (response.IsSuccessStatusCode)
         {
             MachinePark.Remove(machine);
-            
+
         }
         Data.NotifyStateChange();
     }

@@ -20,9 +20,9 @@
         </div>
     </div>
     <hr />
-    <div class="ms-2">
+    <div class="ms-2 me-2">
         <h5>Last updated machine:</h5>
-        <p>Id:<span class="btn btn-light px-1 py-0"> @(LastUpdated?.Id ?? "There are no updated machines")</span></p>
+        <p>Id:<span class="btn btn-light px-1"> @(LastUpdated?.Id ?? "There are no updated machines")</span></p>
         <p>Temperature: <span class="btn btn-light px-1 py-0">@(LastUpdated?.Data ?? 0)&#176;C</span></p>
     </div>
 </div>

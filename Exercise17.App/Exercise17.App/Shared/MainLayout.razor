@@ -1,7 +1,8 @@
 ﻿@inherits LayoutComponentBase
 @inject AppState state
-
-        <NavMenu />
+<CascadingValue Value="this">
+    <NavMenu />
+</CascadingValue>
 <div class="page">
     <div class="sidebar">
         <Statistics MachineCount="@MachineCount" Online="@Online" LastUpdated="@LastUpdated"></Statistics>
@@ -10,13 +11,13 @@
     <main>
         <article class="content px-4">
             <CascadingValue Value="this">
-            @Body
+                @Body
             </CascadingValue>
         </article>
     </main>
 </div>
 
-@code{
+@code {
 
 
     public List<Machine> machinePark { get; set; } = new List<Machine>();
@@ -33,21 +34,25 @@
     }
 
     private int machineCount;
-    public int MachineCount {
+    public int MachineCount
+    {
         get { return machinePark.Count(); }
         set { machineCount = value; }
     }
 
     private int online;
-    public int Online { 
-        get{ return machinePark.Where(m => m.Online == true).Count(); }
-        set{ online = value; } 
+    public int Online
+    {
+        get { return machinePark.Where(m => m.Online == true).Count(); }
+        set { online = value; }
     }
 
-     private Machine lastUpdated;
-    public Machine LastUpdated { 
-        get{ return machinePark.OrderByDescending(m => m.UpdatingTime).FirstOrDefault(); }
-        set{ lastUpdated = value; } 
+    private Machine lastUpdated;
+    public Machine LastUpdated
+    {
+        get { return machinePark.OrderByDescending(m => m.UpdatingTime).FirstOrDefault(); }
+        set { lastUpdated = value; }
     }
+    public bool ShowAdd { get; set; }
 }
 

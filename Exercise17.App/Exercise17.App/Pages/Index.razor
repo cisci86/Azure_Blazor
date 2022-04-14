@@ -1,9 +1,10 @@
 ﻿@page "/"
 @inject IJSRuntime Js
 <PageTitle>Index</PageTitle>
-
-<AddMachine Add="AddMachine"></AddMachine>
-
+@if (Data.ShowAdd)
+{
+    <AddMachine Add="AddMachine"></AddMachine>
+}
 <Machines MachinePark=@Data.machinePark></Machines>
 
 @code {
